@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Catalog System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      padding: 20px;
+      background-color: #bac2d6;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .left-panel {
+      flex: 1 1 300px;
+      margin-right: 20px;
+    }
+
+    .right-panel {
+      flex: 1 1 calc(100% - 320px);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .search-container {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .search-container input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .search-container .btn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #4CAF50;
+    }
+
+    .book-list {
+      margin-top: 20px;
+    }
+
+    .book {
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      position: relative;
+      border: 1px solid #ccc;
+    }
+
+    .book h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .book p {
+      margin-bottom: 5px;
+      color: #666;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      padding: 0;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .remove-btn:hover {
+      background-color: #c82333;
+    }
+
+    .book-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+
+    .book-buttons button {
+      width: 48%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <h1>Library Catalog</h1>
+      <div class="search-container">
+        <input type="text" id="search" placeholder="Search by title, author, or genre">
+        <button class="btn" onclick="libraryUI.searchBooks()">Search</button>
+      </div>
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title">
+      </div>
+      <div class="form-group">
+        <label for="author">Author:</label>
+        <input type="text" id="author">
+      </div>
+      <div class="form-group">
+        <label for="isbn">ISBN:</label>
+        <input type="text" id="isbn">
+      </div>
+      <div class="form-group">
+        <label for="genre">Genre:</label>
+        <input type="text" id="genre">
+      </div>
+      <button class="btn" onclick="libraryUI.addBook()">Add Book</button>
+    </div>
+    <div class="right-panel">
+      <div class="book-list" id="bookList"></div>
+    </div>
+  </div>
+
+  <script>
+    class Book {
+      constructor(title, author, ISBN, genre, availability = true) {
+        this._title = title || ''; 
+        this._author = author || ''; 
+        this._ISBN = ISBN || ''; 
+        this._genre = genre || '';
+        this._availability = availability;
+      }
+
+      get title() {
+        return this._title;
+      }
+
+      set title(title) {
+        this._title = title;
+      }
+
+      get author() {
+        return this._author;
+      }
+
+      set author(author) {
+        this._author = author;
+      }
+
+      get ISBN() {
+        return this._ISBN;
+      }
+
+      set ISBN(ISBN) {
+        this._ISBN = ISBN;
+      }
+
+      get genre() {
+        return this._genre;
+      }
+
+      set genre(genre) {
+        this._genre = genre;
+      }
+
+      get availability() {
+        return this._availability;
+      }
+
+      set availability(availability) {
+        this._availability = availability;
+      }
+
+      checkout() {
+        if (this._availability) {
+          this._availability = false;
+          console.log(`${this._title} has been checked out.`);
+        } else {
+          console.log(`${this._title} is not available.`);
+        }
+      }
+
+      returnBook() {
+        if (!this._availability) {
+          this._availability = true;
+          console.log(`${this._title} has been returned.`);
+        } else {
+          console.log(`${this._title} is already available.`);
+        }
+      }
+
+      displayDetails() {
+        return `
+          <div class="book">
+            <h3>${this._title}</h3>
+            <p>Author: ${this._author}</p>
+            <p>ISBN: ${this._ISBN}</p>
+            <p>Genre: ${this._genre}</p>
+            <p>Availability: ${this._availability ? 'Available' : 'Not Available'}</p>
+            <div class="book-buttons">
+              <button class="btn" onclick="libraryUI.checkoutBook('${this._ISBN}')">Checkout</button>
+              <button class="btn" onclick="libraryUI.returnBook('${this._ISBN}')">Return</button>
+            </div>
+            <button class="remove-btn" onclick="libraryUI.removeBook('${this._ISBN}')">&times;</button>
+          </div>
+        `;
+      }
+    }
+
+    class LibraryCatalog {
+      constructor() {
+        this.catalog = [];
+      }
+
+      addBook(book) {
+        this.catalog.push(book);
+        this.saveToLocalStorage();
+      }
+
+      removeBook(ISBN) {
+        this.catalog = this.catalog.filter(book => book.ISBN !== ISBN);
+        this.saveToLocalStorage();
+        this.displayAllBooks();
+      }
+
+      search(query) {
+        return this.catalog.filter(book =>
+          book.title.toLowerCase().includes(query.toLowerCase()) ||
+          book.author.toLowerCase().includes(query.toLowerCase()) ||
+          book.genre.toLowerCase().includes(query.toLowerCase())
+        );
+      }
+
+      displayAllBooks() {
+        document.getElementById('bookList').innerHTML = '';
+        this.catalog.forEach(book => {
+          document.getElementById('bookList').innerHTML += book.displayDetails();
+        });
+      }
+
+      saveToLocalStorage() {
+        localStorage.setItem('libraryCatalog', JSON.stringify(this.catalog));
+      }
+
+      loadFromLocalStorage() {
+        const catalogData = localStorage.getItem('libraryCatalog');
+        if (catalogData) {
+          this.catalog = JSON.parse(catalogData).map(bookData =>
+            new Book(bookData._title, bookData._author, bookData._ISBN, bookData._genre, bookData._availability)
+          );
+        }
+      }
+    }
+
+    class LibraryUI {
+      constructor(library) {
+        this.library = library;
+      }
+
+      addBook() {
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const ISBN = document.getElementById('isbn').value;
+        const genre = document.getElementById('genre').value;
+        const newBook = new Book(title, author, ISBN, genre);
+        this.library.addBook(newBook);
+        this.library.displayAllBooks();
+        this.clearInputFields();
+      }
+
+      searchBooks() {
+        const query = document.getElementById('search').value;
+        const searchResults = this.library.search(query);
+        document.getElementById('bookList').innerHTML = '';
+        searchResults.forEach(book => {
+          document.getElementById('bookList').innerHTML += book.displayDetails();
+        });
+      }
+
+      removeBook(ISBN) {
+        this.library.removeBook(ISBN);
+      }
+
+      checkoutBook(ISBN) {
+        const book = this.library.catalog.find(b => b.ISBN === ISBN);
+        if (book) {
+          book.checkout();
+          this.library.saveToLocalStorage();
+          this.library.displayAllBooks();
+        }
+      }
+
+      returnBook(ISBN) {
+        const book = this.library.catalog.find(b => b.ISBN === ISBN);
+        if (book) {
+          book.returnBook();
+          this.library.saveToLocalStorage();
+          this.library.displayAllBooks();
+        }
+      }
+
+      clearInputFields() {
+        document.getElementById('title').value = '';
+        document.getElementById('author').value = '';
+        document.getElementById('isbn').value = '';
+        document.getElementById('genre').value = '';
+      }
+    }
+
+    const library = new LibraryCatalog();
+    const libraryUI = new LibraryUI(library);
+
+    window.onload = function() {
+      library.loadFromLocalStorage();
+      library.displayAllBooks();
+    };
+  </script>
+</body>
+</html>
